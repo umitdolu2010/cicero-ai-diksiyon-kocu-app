@@ -675,7 +675,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     marginBottom: 20,
     borderWidth: 2,
     borderColor: colors.border,
-    transition: 'border-color 0.2s',
+
   },
   headerIcon: {
     width: 64,
@@ -711,7 +711,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     marginBottom: 20,
     borderWidth: 2,
     borderColor: colors.border,
-    transition: 'border-color 0.2s',
+
   },
   progressTitle: {
     fontSize: 16,
@@ -757,7 +757,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     justifyContent: 'space-between',
     borderWidth: 2,
     borderColor: colors.border,
-    transition: 'border-color 0.2s',
+
   },
   dayCardCompleted: {
     backgroundColor: '#F0FDF4',
@@ -813,7 +813,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     padding: 24,
     borderWidth: 2,
     borderColor: colors.border,
-    transition: 'border-color 0.2s',
+
   },
   dayDetailHeader: {
     marginBottom: 24,

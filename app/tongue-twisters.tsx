@@ -438,7 +438,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.border,
     alignItems: 'center',
-    transition: 'border-color 0.2s',
+
   },
   levelButtonText: {
     fontSize: 15,
@@ -460,7 +460,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     marginBottom: 20,
     borderWidth: 2,
     borderColor: colors.border,
-    transition: 'border-color 0.2s',
+
   },
   twisterHeader: {
     flexDirection: 'row',
@@ -577,7 +577,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     borderLeftColor: colors.primary,
     borderWidth: 2,
     borderColor: colors.border,
-    transition: 'border-color 0.2s',
+
   },
   infoTitle: {
     fontSize: 16,

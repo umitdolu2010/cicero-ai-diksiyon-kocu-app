@@ -73,7 +73,7 @@ export default function JournalScreen() {
       elevation: 3,
       borderWidth: 2,
       borderColor: Colors.border,
-      transition: 'border-color 0.2s',
+
     },
     chartTitle: {
       fontSize: 18,
@@ -178,7 +178,7 @@ export default function JournalScreen() {
       elevation: 3,
       borderWidth: 2,
       borderColor: Colors.border,
-      transition: 'border-color 0.2s',
+
     },
     historyHeader: {
       flexDirection: 'row',
@@ -239,7 +239,7 @@ export default function JournalScreen() {
       elevation: 3,
       borderWidth: 2,
       borderColor: Colors.border,
-      transition: 'border-color 0.2s',
+
     },
     categoryHeader: {
       flexDirection: 'row',

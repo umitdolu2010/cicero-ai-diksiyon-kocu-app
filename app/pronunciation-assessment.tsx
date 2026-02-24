@@ -572,7 +572,7 @@ const createStyles = (Colors: typeof lightTheme) => StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 12,
     alignItems: 'center',
-    transition: 'border-color 0.2s',
+
   },
   difficultyButtonInactive: {
     backgroundColor: Colors.surface,
@@ -594,7 +594,7 @@ const createStyles = (Colors: typeof lightTheme) => StyleSheet.create({
     marginBottom: 20,
     borderWidth: 2,
     borderColor: Colors.border,
-    transition: 'border-color 0.2s',
+
   },
   textHeader: {
     flexDirection: 'row',
@@ -617,7 +617,7 @@ const createStyles = (Colors: typeof lightTheme) => StyleSheet.create({
     marginBottom: 20,
     borderWidth: 2,
     borderColor: Colors.border,
-    transition: 'border-color 0.2s',
+
   },
   recordingControls: {
     alignItems: 'center',
@@ -695,7 +695,7 @@ const createStyles = (Colors: typeof lightTheme) => StyleSheet.create({
     marginBottom: 20,
     borderWidth: 2,
     borderColor: Colors.border,
-    transition: 'border-color 0.2s',
+
   },
   scoreContainer: {
     marginBottom: 20,

@@ -325,7 +325,7 @@ export default function ArticulationScreen() {
       backgroundColor: Colors.surface,
       borderWidth: 2,
       borderColor: Colors.border,
-      transition: 'border-color 0.2s',
+
     },
     typeButtonActive: {
       backgroundColor: Colors.primary,
@@ -364,7 +364,7 @@ export default function ArticulationScreen() {
       alignItems: 'center',
       borderWidth: 2,
       borderColor: Colors.border,
-      transition: 'border-color 0.2s',
+
     },
     difficultyText: {
       fontSize: 14,
@@ -385,7 +385,7 @@ export default function ArticulationScreen() {
       elevation: 3,
       borderWidth: 2,
       borderColor: Colors.border,
-      transition: 'border-color 0.2s',
+
     },
     exerciseHeader: {
       flexDirection: 'row',
@@ -539,7 +539,7 @@ export default function ArticulationScreen() {
       marginBottom: 20,
       borderWidth: 2,
       borderColor: Colors.border,
-      transition: 'border-color 0.2s',
+
     },
     instructionsHeader: {
       flexDirection: 'row',
@@ -635,7 +635,7 @@ export default function ArticulationScreen() {
       marginBottom: 20,
       borderWidth: 2,
       borderColor: Colors.border,
-      transition: 'border-color 0.2s',
+
     },
     backButtonText: {
       fontSize: 16,

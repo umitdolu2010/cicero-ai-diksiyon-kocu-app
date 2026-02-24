@@ -579,7 +579,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 12,
     alignItems: 'center',
-    transition: 'border-color 0.2s',
+
   },
   difficultyButtonInactive: {
     backgroundColor: colors.surface,
@@ -600,7 +600,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     padding: 24,
     borderWidth: 2,
     borderColor: colors.border,
-    transition: 'border-color 0.2s',
+
   },
   exerciseTitle: {
     fontSize: 20,
@@ -789,7 +789,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 3,
-    transition: 'border-color 0.2s',
+
   },
   wordFinderHeader: {
     flexDirection: 'row',
@@ -814,7 +814,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     marginBottom: 20,
     borderWidth: 2,
     borderColor: colors.border,
-    transition: 'border-color 0.2s',
+
   },
   searchInputContainer: {
     flexDirection: 'row',
