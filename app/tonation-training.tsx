@@ -17,6 +17,7 @@ import { z } from 'zod';
 import { Audio } from 'expo-av';
 import * as Speech from 'expo-speech';
 import { useTranslation } from '@/constants/translations';
+import { useVoiceCoach, getScreenCoachIntro } from '@/hooks/useVoiceCoach';
 
 interface Story {
   title: string;
@@ -25,7 +26,7 @@ interface Story {
 }
 
 export default function TonationTrainingScreen() {
-  const { theme, language } = useApp();
+  const { theme, language, profile } = useApp();
   const t = useTranslation(language);
   const Colors = theme === 'dark' ? darkTheme : lightTheme;
   const styles = createStyles(Colors);
@@ -46,6 +47,13 @@ export default function TonationTrainingScreen() {
   
   const recordingRef = useRef<Audio.Recording | null>(null);
   const soundRef = useRef<Audio.Sound | null>(null);
+
+  const voiceCoach = useVoiceCoach({ language, delay: 800 });
+
+  React.useEffect(() => {
+    const intro = getScreenCoachIntro('tonation', profile?.name || '', language);
+    if (intro) voiceCoach.speakOnce(intro);
+  }, []);
 
   const generateStory = async () => {
     Speech.stop();

@@ -31,6 +31,7 @@ import TrialTimer from '@/components/TrialTimer';
 import { lightTheme, darkTheme } from '@/constants/colors';
 import { useTranslation } from '@/constants/translations';
 import { useTrialNotifications } from '@/hooks/useTrialNotifications';
+import { useVoiceCoach, getCoachGreeting } from '@/hooks/useVoiceCoach';
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -41,6 +42,8 @@ export default function DashboardScreen() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   
   useTrialNotifications();
+
+  const voiceCoach = useVoiceCoach({ language, delay: 1000 });
 
   const styles = React.useMemo(() => createStyles(Colors), [Colors]);
 
@@ -159,6 +162,15 @@ export default function DashboardScreen() {
       router.replace('/welcome' as any);
     }
   }, [isAuthenticated, authLoading, router]);
+
+  React.useEffect(() => {
+    if (!authLoading && !appLoading && isAuthenticated && profile.name) {
+      const todayProg = getTodayProgress();
+      const weekStats = getWeeklyStats();
+      const greeting = getCoachGreeting(profile.name, language, todayProg, weekStats.streak);
+      voiceCoach.speakOnce(greeting);
+    }
+  }, [authLoading, appLoading, isAuthenticated]);
   
   if (authLoading || appLoading) {
     return (

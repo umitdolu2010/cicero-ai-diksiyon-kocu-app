@@ -16,6 +16,7 @@ import { useApp } from '@/contexts/AppContext';
 import { analyzeReadingWithFeedback, generatePronunciationText } from '@/utils/gptService';
 import * as Speech from 'expo-speech';
 import { useTranslation } from '@/constants/translations';
+import { useVoiceCoach, getScreenCoachIntro } from '@/hooks/useVoiceCoach';
 
 type DifficultyLevel = 'easy' | 'medium' | 'hard';
 
@@ -46,6 +47,13 @@ export default function PronunciationAssessmentScreen() {
   const [speechInProgress, setSpeechInProgress] = useState(false);
   const [isPlayingRecording, setIsPlayingRecording] = useState(false);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
+
+  const voiceCoach = useVoiceCoach({ language, delay: 800 });
+
+  React.useEffect(() => {
+    const intro = getScreenCoachIntro('pronunciation', profile?.name || '', language);
+    if (intro) voiceCoach.speakOnce(intro);
+  }, []);
 
   const generateNewText = useCallback(async () => {
     setIsLoadingText(true);

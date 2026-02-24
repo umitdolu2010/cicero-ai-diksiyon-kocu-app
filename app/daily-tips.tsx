@@ -15,6 +15,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { generateDailyTip } from '@/utils/gptService';
 import * as Speech from 'expo-speech';
 import { useTranslation } from '@/constants/translations';
+import { useVoiceCoach, getScreenCoachIntro } from '@/hooks/useVoiceCoach';
 
 interface Tip {
   title: string;
@@ -51,8 +52,12 @@ export default function DailyTipsScreen() {
     }
   }, [language]);
 
+  const voiceCoach = useVoiceCoach({ language, delay: 800 });
+
   useEffect(() => {
     loadDailyTip();
+    const intro = getScreenCoachIntro('dailyTips', user?.name || '', language);
+    if (intro) voiceCoach.speakOnce(intro);
     
     return () => {
       Speech.stop();

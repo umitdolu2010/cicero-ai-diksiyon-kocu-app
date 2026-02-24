@@ -15,6 +15,7 @@ import { generateObject } from '@rork-ai/toolkit-sdk';
 import { z } from 'zod';
 import * as Speech from 'expo-speech';
 import { useTranslation } from '@/constants/translations';
+import { useVoiceCoach, getScreenCoachIntro } from '@/hooks/useVoiceCoach';
 
 interface DiaphragmExercise {
   title: string;
@@ -25,7 +26,7 @@ interface DiaphragmExercise {
 }
 
 export default function DiaphragmTrainingScreen() {
-  const { theme, language } = useApp();
+  const { theme, language, profile } = useApp();
   const Colors = theme === 'dark' ? darkTheme : lightTheme;
   const t = useTranslation(language);
   const styles = createStyles(Colors);
@@ -35,8 +36,12 @@ export default function DiaphragmTrainingScreen() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [completedExercises, setCompletedExercises] = useState<Set<number>>(new Set());
 
+  const voiceCoach = useVoiceCoach({ language, delay: 800 });
+
   useEffect(() => {
     loadExercises();
+    const intro = getScreenCoachIntro('diaphragm', profile?.name || '', language);
+    if (intro) voiceCoach.speakOnce(intro);
   }, [language]);
 
   const loadExercises = async () => {

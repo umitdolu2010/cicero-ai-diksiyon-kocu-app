@@ -15,6 +15,7 @@ import { lightTheme, darkTheme } from '@/constants/colors';
 import { useApp } from '@/contexts/AppContext';
 import * as Speech from 'expo-speech';
 import { generateText } from '@rork-ai/toolkit-sdk';
+import { useVoiceCoach, getScreenCoachIntro } from '@/hooks/useVoiceCoach';
 
 type DifficultyLevel = 'easy' | 'medium' | 'hard';
 
@@ -26,7 +27,7 @@ interface Exercise {
 }
 
 export default function ListeningTrainingScreen() {
-  const { theme } = useApp();
+  const { theme, language: appLanguage, profile } = useApp();
   const Colors = theme === 'dark' ? darkTheme : lightTheme;
   const styles = createStyles(Colors);
   const [difficulty, setDifficulty] = useState<DifficultyLevel>('easy');
@@ -42,6 +43,13 @@ export default function ListeningTrainingScreen() {
   const [searchResults, setSearchResults] = useState<string[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showWordFinder, setShowWordFinder] = useState(false);
+
+  const voiceCoach = useVoiceCoach({ language: appLanguage, delay: 800 });
+
+  React.useEffect(() => {
+    const intro = getScreenCoachIntro('listening', profile?.name || '', appLanguage);
+    if (intro) voiceCoach.speakOnce(intro);
+  }, []);
 
   const generateExercise = React.useCallback(async () => {
     setIsGenerating(true);
