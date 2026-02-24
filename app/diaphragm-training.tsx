@@ -284,9 +284,59 @@ export default function DiaphragmTrainingScreen() {
 }
 
 async function generateDiaphragmExercises(language: 'tr' | 'en' | 'de'): Promise<DiaphragmExercise[]> {
-  console.log('Attempting to generate diaphragm exercises for language:', language);
-  console.log('Using fallback exercises immediately to avoid API errors');
-  return getFallbackExercises(language);
+  console.log('Generating diaphragm exercises for language:', language);
+  
+  try {
+    const prompts = {
+      tr: `Bir diksiyon ve ses koçu olarak, diyafram nefes egzersizleri oluştur. 5 adet egzersiz üret. Her egzersiz başlangıçtan ileri seviyeye doğru ilerlemeli.
+
+Her egzersiz için:
+- title: Egzersiz adı
+- description: Kısa açıklama (1-2 cümle)
+- steps: Adım adım talimatlar (4-6 adım)
+- duration: Tahmini süre
+- benefits: Faydaları (3-4 madde)`,
+      en: `As a diction and voice coach, create diaphragm breathing exercises. Generate 5 exercises. Each exercise should progress from beginner to advanced level.
+
+For each exercise:
+- title: Exercise name
+- description: Short description (1-2 sentences)
+- steps: Step-by-step instructions (4-6 steps)
+- duration: Estimated duration
+- benefits: Benefits (3-4 items)`,
+      de: `Als Diktions- und Stimmcoach erstellen Sie Zwerchfell-Atemübungen. Generieren Sie 5 Übungen. Jede Übung sollte vom Anfänger- zum Fortgeschrittenenniveau fortschreiten.
+
+Für jede Übung:
+- title: Übungsname
+- description: Kurze Beschreibung (1-2 Sätze)
+- steps: Schritt-für-Schritt-Anleitung (4-6 Schritte)
+- duration: Geschätzte Dauer
+- benefits: Vorteile (3-4 Punkte)`,
+    };
+
+    const schema = z.object({
+      exercises: z.array(
+        z.object({
+          title: z.string(),
+          description: z.string(),
+          steps: z.array(z.string()),
+          duration: z.string(),
+          benefits: z.array(z.string()),
+        })
+      ),
+    });
+
+    const result = await generateObject({
+      messages: [{ role: 'user', content: prompts[language] }],
+      schema,
+    });
+
+    console.log('AI generated diaphragm exercises:', result.exercises.length);
+    return result.exercises;
+  } catch (error) {
+    console.error('Error generating diaphragm exercises, using fallback:', error);
+    return getFallbackExercises(language);
+  }
 }
 
 function getFallbackExercises(language: 'tr' | 'en' | 'de'): DiaphragmExercise[] {
