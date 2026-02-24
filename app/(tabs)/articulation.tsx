@@ -59,6 +59,22 @@ export default function ArticulationScreen() {
   const [isPlayingFeedback, setIsPlayingFeedback] = useState(false);
 
   useEffect(() => {
+    const initAudio = async () => {
+      try {
+        if (Platform.OS !== 'web') {
+          await Audio.setAudioModeAsync({
+            allowsRecordingIOS: false,
+            playsInSilentModeIOS: true,
+            staysActiveInBackground: false,
+          });
+        }
+        console.log('Audio mode initialized for playback');
+      } catch (error) {
+        console.error('Error initializing audio mode:', error);
+      }
+    };
+    
+    initAudio();
     generateExercise();
     
     return () => {
@@ -292,16 +308,36 @@ export default function ArticulationScreen() {
       return;
     }
     
-    console.log('Playing example with TTS');
+    try {
+      if (Platform.OS !== 'web') {
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          playsInSilentModeIOS: true,
+        });
+      }
+    } catch (error) {
+      console.error('Error setting audio mode for playback:', error);
+    }
+    
+    console.log('Playing example with TTS:', currentExercise.text);
     setIsPlayingExample(true);
     const speechLang = language === 'tr' ? 'tr-TR' : language === 'en' ? 'en-US' : 'de-DE';
     Speech.speak(currentExercise.text, {
       language: speechLang,
       rate: 0.7,
       pitch: 1.0,
-      onDone: () => setIsPlayingExample(false),
-      onStopped: () => setIsPlayingExample(false),
-      onError: () => setIsPlayingExample(false),
+      onDone: () => {
+        console.log('Speech playback done');
+        setIsPlayingExample(false);
+      },
+      onStopped: () => {
+        console.log('Speech playback stopped');
+        setIsPlayingExample(false);
+      },
+      onError: (error) => {
+        console.error('Speech playback error:', error);
+        setIsPlayingExample(false);
+      },
     });
   };
 
