@@ -32,7 +32,6 @@ import { lightTheme, darkTheme } from '@/constants/colors';
 import { useTranslation } from '@/constants/translations';
 import { useTrialNotifications } from '@/hooks/useTrialNotifications';
 import { useVoiceCoach, getCoachGreeting, markUserInteracted, hasUserInteracted } from '@/hooks/useVoiceCoach';
-import { Platform } from 'react-native';
 
 export default function DashboardScreen() {
   const router = useRouter();
