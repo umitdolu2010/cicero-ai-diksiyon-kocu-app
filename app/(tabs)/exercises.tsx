@@ -16,6 +16,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/constants/translations';
 import { exerciseTemplates, getMotivationTips, turkishVowels, turkishConsonants } from '@/constants/exerciseTemplates';
 import * as Speech from 'expo-speech';
+import { markUserInteracted, hasUserInteracted } from '@/hooks/useVoiceCoach';
 
 interface Exercise {
   title: string;
@@ -115,6 +116,8 @@ export default function ExercisesScreen() {
   const [isSessionActive, setIsSessionActive] = useState(false);
   const [motivationTip, setMotivationTip] = useState('');
   const [isPlayingTip, setIsPlayingTip] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const pendingSpeechRef = useRef<string | null>(null);
 
   const motivationTips = getMotivationTips(language);
 
@@ -124,9 +127,25 @@ export default function ExercisesScreen() {
 
     const userName = user?.name || (language === 'tr' ? 'Değerli kullanıcı' : language === 'en' ? 'Dear user' : 'Lieber Benutzer');
     const speechLang = language === 'tr' ? 'tr-TR' : language === 'en' ? 'en-US' : 'de-DE';
-    Speech.speak(`${userName}, ${randomTip}`, { language: speechLang, rate: 0.85 });
+    const text = `${userName}, ${randomTip}`;
+    
+    if (Platform.OS === 'web' && !hasUserInteracted()) {
+      pendingSpeechRef.current = text;
+      console.log('[Exercises] Waiting for user interaction before speaking');
+    } else {
+      Speech.speak(text, { language: speechLang, rate: 0.85 });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Play pending speech after user interaction
+  useEffect(() => {
+    if (hasInteracted && pendingSpeechRef.current) {
+      const speechLang = language === 'tr' ? 'tr-TR' : language === 'en' ? 'en-US' : 'de-DE';
+      Speech.speak(pendingSpeechRef.current, { language: speechLang, rate: 0.85 });
+      pendingSpeechRef.current = null;
+    }
+  }, [hasInteracted, language]);
 
   const playTip = () => {
     if (isPlayingTip) {
@@ -315,10 +334,22 @@ export default function ExercisesScreen() {
     );
   }
 
+  const handleInteraction = () => {
+    if (!hasInteracted) {
+      markUserInteracted();
+      setHasInteracted(true);
+    }
+  };
+
   return (
     <>
       <Stack.Screen options={{ title: t.exercises.title, headerStyle: { backgroundColor: Colors.accent }, headerTintColor: '#FFFFFF' }} />
-      <ScrollView style={[styles.container, { backgroundColor: Colors.background }]} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={[styles.container, { backgroundColor: Colors.background }]} 
+        showsVerticalScrollIndicator={false}
+        onTouchStart={handleInteraction}
+        onScrollBeginDrag={handleInteraction}
+      >
         <View style={styles.content}>
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{language === 'tr' ? 'Süre Seç' : language === 'en' ? 'Select Duration' : 'Dauer wählen'}</Text>

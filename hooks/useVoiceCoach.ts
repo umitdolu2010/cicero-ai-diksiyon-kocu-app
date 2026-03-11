@@ -3,6 +3,17 @@ import { Platform } from 'react-native';
 import * as Speech from 'expo-speech';
 import { Language } from '@/contexts/AppContext';
 
+let globalUserInteracted = false;
+
+export function markUserInteracted() {
+  globalUserInteracted = true;
+  console.log('[VoiceCoach] User interaction detected, speech enabled');
+}
+
+export function hasUserInteracted() {
+  return globalUserInteracted;
+}
+
 const LANGUAGE_MAP: Record<Language, string> = {
   tr: 'tr-TR',
   en: 'en-US',
@@ -21,30 +32,62 @@ export function useVoiceCoach({ language, autoSpeak = false, delay = 600, rate =
   const hasSpokeRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const speak = useCallback((text: string) => {
-    if (!text) return;
+  const speak = useCallback((text: string, force = false) => {
+    if (!text) {
+      console.log('[VoiceCoach] No text provided');
+      return;
+    }
+
+    // Web requires user interaction before playing audio
+    if (Platform.OS === 'web' && !globalUserInteracted && !force) {
+      console.log('[VoiceCoach] Waiting for user interaction before speaking...');
+      return;
+    }
 
     console.log('[VoiceCoach] Speaking:', text.substring(0, 80) + '...');
 
-    if (Platform.OS === 'web') {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = LANGUAGE_MAP[language];
-      utterance.rate = rate;
-      utterance.onstart = () => setIsSpeaking(true);
-      utterance.onend = () => setIsSpeaking(false);
-      utterance.onerror = () => setIsSpeaking(false);
-      window.speechSynthesis.speak(utterance);
-    } else {
-      Speech.stop();
-      setIsSpeaking(true);
-      Speech.speak(text, {
-        language: LANGUAGE_MAP[language],
-        rate,
-        onDone: () => setIsSpeaking(false),
-        onStopped: () => setIsSpeaking(false),
-        onError: () => setIsSpeaking(false),
-      });
+    try {
+      if (Platform.OS === 'web') {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = LANGUAGE_MAP[language];
+        utterance.rate = rate;
+        utterance.onstart = () => {
+          console.log('[VoiceCoach] Speech started');
+          setIsSpeaking(true);
+        };
+        utterance.onend = () => {
+          console.log('[VoiceCoach] Speech ended');
+          setIsSpeaking(false);
+        };
+        utterance.onerror = (e) => {
+          console.error('[VoiceCoach] Speech error:', e);
+          setIsSpeaking(false);
+        };
+        window.speechSynthesis.speak(utterance);
+      } else {
+        Speech.stop();
+        setIsSpeaking(true);
+        Speech.speak(text, {
+          language: LANGUAGE_MAP[language],
+          rate,
+          onDone: () => {
+            console.log('[VoiceCoach] Speech done');
+            setIsSpeaking(false);
+          },
+          onStopped: () => {
+            console.log('[VoiceCoach] Speech stopped');
+            setIsSpeaking(false);
+          },
+          onError: (err) => {
+            console.error('[VoiceCoach] Speech error:', err);
+            setIsSpeaking(false);
+          },
+        });
+      }
+    } catch (error) {
+      console.error('[VoiceCoach] Failed to speak:', error);
+      setIsSpeaking(false);
     }
   }, [language, rate]);
 

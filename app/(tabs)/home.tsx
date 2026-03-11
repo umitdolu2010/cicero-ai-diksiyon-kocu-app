@@ -31,7 +31,8 @@ import TrialTimer from '@/components/TrialTimer';
 import { lightTheme, darkTheme } from '@/constants/colors';
 import { useTranslation } from '@/constants/translations';
 import { useTrialNotifications } from '@/hooks/useTrialNotifications';
-import { useVoiceCoach, getCoachGreeting } from '@/hooks/useVoiceCoach';
+import { useVoiceCoach, getCoachGreeting, markUserInteracted, hasUserInteracted } from '@/hooks/useVoiceCoach';
+import { Platform } from 'react-native';
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -44,6 +45,8 @@ export default function DashboardScreen() {
   useTrialNotifications();
 
   const voiceCoach = useVoiceCoach({ language, delay: 1000 });
+  const [hasInteracted, setHasInteracted] = React.useState(false);
+  const pendingGreetingRef = React.useRef<string | null>(null);
 
   const styles = React.useMemo(() => createStyles(Colors), [Colors]);
 
@@ -168,9 +171,26 @@ export default function DashboardScreen() {
       const todayProg = getTodayProgress();
       const weekStats = getWeeklyStats();
       const greeting = getCoachGreeting(profile.name, language, todayProg, weekStats.streak);
-      voiceCoach.speakOnce(greeting);
+      console.log('[Home] Preparing greeting:', greeting.substring(0, 50));
+      
+      if (Platform.OS === 'web' && !hasUserInteracted()) {
+        // Store greeting for later when user interacts
+        pendingGreetingRef.current = greeting;
+        console.log('[Home] Waiting for user interaction before speaking');
+      } else {
+        voiceCoach.speak(greeting);
+      }
     }
-  }, [authLoading, appLoading, isAuthenticated]);
+  }, [authLoading, appLoading, isAuthenticated, profile.name, language, voiceCoach, getTodayProgress, getWeeklyStats]);
+
+  // Handle pending greeting after user interaction
+  React.useEffect(() => {
+    if (hasInteracted && pendingGreetingRef.current) {
+      console.log('[Home] User interacted, playing pending greeting');
+      voiceCoach.speak(pendingGreetingRef.current);
+      pendingGreetingRef.current = null;
+    }
+  }, [hasInteracted, voiceCoach]);
   
   if (authLoading || appLoading) {
     return (
@@ -249,8 +269,20 @@ export default function DashboardScreen() {
     });
   };
 
+  const handleInteraction = () => {
+    if (!hasInteracted) {
+      markUserInteracted();
+      setHasInteracted(true);
+    }
+  };
+
   return (
-    <ScrollView style={[styles.container, { backgroundColor: Colors.background }]} showsVerticalScrollIndicator={false}>
+    <ScrollView 
+      style={[styles.container, { backgroundColor: Colors.background }]} 
+      showsVerticalScrollIndicator={false}
+      onTouchStart={handleInteraction}
+      onScrollBeginDrag={handleInteraction}
+    >
       <LinearGradient
         colors={[Colors.gradient.start, Colors.gradient.end]}
         style={styles.header}
